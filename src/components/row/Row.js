@@ -2,6 +2,7 @@ import movieTrailer from 'movie-trailer';
 import React, { useState, useEffect } from 'react'
 import YouTube from 'react-youtube';
 import axios from '../../api/axios';
+import Loader from '../loader/Loader';
 import './row.css';
 
 
@@ -10,12 +11,15 @@ function Row({ title, fetchUrl, IsLargeRow }) {
 
   const [movies, setMovies] = useState([]);
   const [trailerUrl, setTrailerUrl] = useState("");
+  const [IsLoading, setIsloading] = useState(true);
 
   useEffect(() => {
 
     async function fetchData() {
       const request = await axios.get(fetchUrl);
+      setIsloading(false);
       setMovies(request.data.results);
+      
       return request;
     }
     fetchData();
@@ -58,7 +62,9 @@ function Row({ title, fetchUrl, IsLargeRow }) {
   return (
     <div className="row">
       <h2>{title}</h2>
-      <div className="row__posters">
+      {
+        IsLoading ? <Loader /> : 
+        <div className="row__posters">
         {movies.map(movie => {
           return (
             <img
@@ -71,6 +77,7 @@ function Row({ title, fetchUrl, IsLargeRow }) {
 
 
       </div>
+      }
 
       {trailerUrl && <YouTube videoId={trailerUrl} opts={opts} />}
 
